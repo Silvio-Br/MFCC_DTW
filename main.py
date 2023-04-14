@@ -3,14 +3,61 @@
 
 # import libraries
 import sys
+import librosa
+import numpy as np
 
 # Variables
-win_length = 250000.0 # = 25 ms = length of a time frame
-hop_length = 100000.0 # = 10 ms = frame periodicity
 n_mfcc = 13 # Number of MFCC coeffs
 ref_oui_file = ""
 ref_non_file = ""
 tests_file = ""
+
+# Function to preaccentuate the signal
+def preaccentuation(signal):
+    signaldec = np.roll(signal, 1)
+    signaldec[0] = 0
+    output = signal - 0.97 * signaldec
+    return output
+
+# Function to generate the MFCCs of the ref_oui_file and ref_non_file
+def generate_mfcc(array_ref_oui, array_ref_non):
+    # create the MFCCs of the ref_oui_file
+    # calculate the 13 first vectors, delta and delta-delta
+    for i in range(len(array_ref_oui)):
+        # get audio file
+        y, sr = librosa.load(array_ref_oui[i])
+        y = preaccentuation(y)
+        win_length = 25 * sr // 1000
+        hop_length = 10 * sr // 1000
+        fen = np.hamming(win_length)
+
+        # get MFCCs
+        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc, n_fft=win_length, hop_length=hop_length, window=fen)
+        print(mfccs)
+
+        # get delta
+        delta = librosa.feature.delta(mfccs)
+
+        # get delta-delta
+        delta_delta = librosa.feature.delta(mfccs, order=2)
+
+        # generate the .mfcc file
+        # Vecteur i : [12 coeffs MFCCs] [12 coeffs delta] [12 coeffs delta-delta]
+        mfcc_file = open(array_ref_oui[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
+        mfcc_file.write("Nombre de vecteurs :\n")
+        mfccs_transpose = mfccs.T
+        print(len(mfccs[1]))
+        for j in range(len(mfccs[1])):
+            mfcc_file.write("Vecteur " + str(j+1) + " : ")
+
+            for k in range(1, 13):
+                mfcc_file.write(str(mfccs_transpose[j][k]) + " ")
+            #for k in range(1, 13):
+                #mfcc_file.write(str(delta[j][k]) + " ")
+            #for k in range(1, 13):
+                #mfcc_file.write(str(delta_delta[j][k]) + " ")
+            mfcc_file.write("\n")
+        mfcc_file.close()
 
 # main function
 def main():
@@ -45,7 +92,8 @@ def main():
             if line != "\n":
                 array_ref_non.append(line.replace("\n", ""))
 
-    print(array_tests)
+    # create the MFCCs of the ref_oui_file and ref_non_file
+    generate_mfcc(array_ref_non, array_ref_oui)
 
 # Call main function
 if __name__ == "__main__":
