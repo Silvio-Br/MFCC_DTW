@@ -24,7 +24,28 @@ def main():
         ref_non_file = sys.argv[2]
         tests_file = sys.argv[3]
 
-    print("Hello World!")
+    # read the tests_file
+    array_tests = []
+    with open(tests_file, "r") as f:
+        for line in f:
+            if line != "\n":
+                array_tests.append(line.replace("\n", ""))
+
+    # read the ref_oui_file
+    array_ref_oui = []
+    with open(ref_oui_file, "r") as f:
+        for line in f:
+            if line != "\n":
+                array_ref_oui.append(line.replace("\n", ""))
+
+    # read the ref_non_file
+    array_ref_non = []
+    with open(ref_non_file, "r") as f:
+        for line in f:
+            if line != "\n":
+                array_ref_non.append(line.replace("\n", ""))
+
+    print(array_tests)
 
 # Call main function
 if __name__ == "__main__":
