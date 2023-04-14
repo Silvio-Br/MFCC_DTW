@@ -23,17 +23,17 @@ def preaccentuation(signal):
 def generate_mfcc(array_ref_oui, array_ref_non):
     # create the MFCCs of the ref_oui_file
     # calculate the 13 first vectors, delta and delta-delta
-    for i in range(len(array_ref_oui)):
+    array_refs = array_ref_oui + array_ref_non
+    for i in range(len(array_refs)):
         # get audio file
-        y, sr = librosa.load(array_ref_oui[i])
+        y, sr = librosa.load(array_refs[i])
         y = preaccentuation(y)
         win_length = 25 * sr // 1000
         hop_length = 10 * sr // 1000
         fen = np.hamming(win_length)
 
         # get MFCCs
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, n_mfcc=n_mfcc, n_fft=win_length, hop_length=hop_length, window=fen)
-        print(mfccs)
+        mfccs = librosa.feature.mfcc(y=y, sr=sr, win_length=win_length, hop_length=hop_length, n_mfcc=n_mfcc, window=fen)
 
         # get delta
         delta = librosa.feature.delta(mfccs)
@@ -43,14 +43,13 @@ def generate_mfcc(array_ref_oui, array_ref_non):
 
         # generate the .mfcc file
         # Vecteur i : [12 coeffs MFCCs] [12 coeffs delta] [12 coeffs delta-delta]
-        mfcc_file = open(array_ref_oui[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
+        mfcc_file = open(array_refs[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
         mfcc_file.write("Nombre de vecteurs :\n")
         mfccs_transpose = mfccs.T
         delta_transpose = delta.T
         delta_delta_transpose = delta_delta.T
         for j in range(len(mfccs_transpose)):
             mfcc_file.write("Vecteur " + str(j+1) + " : ")
-
             for k in range(1, 13):
                 mfcc_file.write(str(mfccs_transpose[j][k]) + " ")
             for k in range(1, 13):
@@ -94,7 +93,7 @@ def main():
                 array_ref_non.append(line.replace("\n", ""))
 
     # create the MFCCs of the ref_oui_file and ref_non_file
-    generate_mfcc(array_ref_non, array_ref_oui)
+    generate_mfcc(array_ref_oui, array_ref_non)
 
 # Call main function
 if __name__ == "__main__":
