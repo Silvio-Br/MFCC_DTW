@@ -76,6 +76,18 @@ def main():
         tests_file = sys.argv[3]
 
     # read the tests_file
+
+    for file in [ref_oui_file, ref_non_file, tests_file]:
+        if not os.path.exists(file):
+            print("Error: " + file + " does not exist")
+            sys.exit(1)
+
+        # check if the file is empty
+        if os.stat(file).st_size == 0:
+            print("Error: " + file + " is empty")
+            sys.exit(1)
+
+    # read the tests_file
     array_tests = []
     with open(tests_file, "r") as f:
         for line in f:
