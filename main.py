@@ -3,6 +3,7 @@
 
 # import libraries
 import sys
+import os
 import librosa
 import numpy as np
 
@@ -43,6 +44,9 @@ def generate_mfcc(array_ref_oui, array_ref_non):
 
         # generate the .mfcc file
         # Vecteur i : [12 coeffs MFCCs] [12 coeffs delta] [12 coeffs delta-delta]
+        # create folder mfcc_files if it doesn't exist
+        if not os.path.exists("mfcc_files"):
+            os.makedirs("mfcc_files")
         mfcc_file = open(array_refs[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
         mfcc_file.write("Nombre de vecteurs :\n")
         mfccs_transpose = mfccs.T
