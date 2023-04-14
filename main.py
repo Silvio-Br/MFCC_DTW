@@ -46,16 +46,17 @@ def generate_mfcc(array_ref_oui, array_ref_non):
         mfcc_file = open(array_ref_oui[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
         mfcc_file.write("Nombre de vecteurs :\n")
         mfccs_transpose = mfccs.T
-        print(len(mfccs[1]))
-        for j in range(len(mfccs[1])):
+        delta_transpose = delta.T
+        delta_delta_transpose = delta_delta.T
+        for j in range(len(mfccs_transpose)):
             mfcc_file.write("Vecteur " + str(j+1) + " : ")
 
             for k in range(1, 13):
                 mfcc_file.write(str(mfccs_transpose[j][k]) + " ")
-            #for k in range(1, 13):
-                #mfcc_file.write(str(delta[j][k]) + " ")
-            #for k in range(1, 13):
-                #mfcc_file.write(str(delta_delta[j][k]) + " ")
+            for k in range(1, 13):
+                mfcc_file.write(str(delta_transpose[j][k]) + " ")
+            for k in range(1, 13):
+                mfcc_file.write(str(delta_delta_transpose[j][k]) + " ")
             mfcc_file.write("\n")
         mfcc_file.close()
 
