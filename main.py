@@ -48,7 +48,7 @@ def generate_mfcc(array_ref_oui, array_ref_non):
         if not os.path.exists("mfcc_files"):
             os.makedirs("mfcc_files")
         mfcc_file = open(array_refs[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
-        mfcc_file.write("Nombre de vecteurs :\n")
+        mfcc_file.write("Nombre de vecteurs : " + str(len(mfccs[0])) + "\n")
         mfccs_transpose = mfccs.T
         delta_transpose = delta.T
         delta_delta_transpose = delta_delta.T
