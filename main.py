@@ -13,22 +13,15 @@ ref_oui_file = ""
 ref_non_file = ""
 tests_file = ""
 
-# Function to preaccentuate the signal
-def preaccentuation(signal):
-    signaldec = np.roll(signal, 1)
-    signaldec[0] = 0
-    output = signal - 0.97 * signaldec
-    return output
 
 # Function to generate the MFCCs of the ref_oui_file and ref_non_file
-def generate_mfcc(array_ref_oui, array_ref_non):
-    # create the MFCCs of the ref_oui_file
+def generate_mfcc(array_ref_oui, array_ref_non, array_tests):
+    # create the MFCCs of the ref_oui_file and ref_non_file
     # calculate the 13 first vectors, delta and delta-delta
-    array_refs = array_ref_oui + array_ref_non
-    for i in range(len(array_refs)):
+    array = array_ref_oui + array_ref_non + array_tests
+    for i in range(len(array)):
         # get audio file
-        y, sr = librosa.load(array_refs[i])
-        y = preaccentuation(y)
+        y, sr = librosa.load(array[i])
         win_length = 25 * sr // 1000
         hop_length = 10 * sr // 1000
         fen = np.hamming(win_length)
@@ -47,7 +40,9 @@ def generate_mfcc(array_ref_oui, array_ref_non):
         # create folder mfcc_files if it doesn't exist
         if not os.path.exists("mfcc_files"):
             os.makedirs("mfcc_files")
-        mfcc_file = open(array_refs[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
+        if not os.path.exists("test_mfcc_files"):
+            os.makedirs("test_mfcc_files")
+        mfcc_file = open(array[i].replace(".wav", ".mfcc").replace("audio", "mfcc"), "w")
         mfcc_file.write("Nombre de vecteurs : " + str(len(mfccs[0])) + "\n")
         mfccs_transpose = mfccs.T
         delta_transpose = delta.T
@@ -62,6 +57,7 @@ def generate_mfcc(array_ref_oui, array_ref_non):
                 mfcc_file.write(str(delta_delta_transpose[j][k]) + " ")
             mfcc_file.write("\n")
         mfcc_file.close()
+
 
 # main function
 def main():
@@ -108,7 +104,57 @@ def main():
                 array_ref_non.append(line.replace("\n", ""))
 
     # create the MFCCs of the ref_oui_file and ref_non_file
-    generate_mfcc(array_ref_oui, array_ref_non)
+    generate_mfcc(array_ref_oui, array_ref_non, array_tests)
+
+    # replace the .wav files by the .mfcc files
+    for i in range(len(array_ref_oui)):
+        array_ref_oui[i] = array_ref_oui[i].replace(".wav", ".mfcc").replace("audio", "mfcc")
+    for i in range(len(array_ref_non)):
+        array_ref_non[i] = array_ref_non[i].replace(".wav", ".mfcc").replace("audio", "mfcc")
+    for i in range(len(array_tests)):
+        array_tests[i] = array_tests[i].replace(".wav", ".mfcc").replace("audio", "mfcc")
+
+    NB = 36
+
+    # for each test file
+    for j in range(len(array_tests)):
+        # get the mfcc file
+        mfcc_test_file = open(array_tests[j], "r")
+
+        # get number of vectors of the mfcc file
+        n = int(mfcc_test_file.readline().replace("Nombre de vecteurs : ", ""))
+
+        X = [[0 for j in range(NB + 1)] for i in range(n + 1)]
+        # for each vector of the mfcc file (except the first line) put the vector in X
+        for i in range(1, n + 1):
+            line = mfcc_test_file.readline().replace("Vecteur " + str(i) + " : ", "").split(" ")
+            # remove last element of the list (empty string)
+            line.pop()
+
+            for j in range(0, NB):
+                X[i][j] = line[j]
+        X.pop(0)
+
+        # for each oui file
+        for k in range(len(array_ref_oui)):
+            # get oui file mfcc
+            mfcc_file_ref_oui = open(array_ref_oui[k], "r")
+
+            # get number of vectors of the oui
+            m = int(mfcc_file_ref_oui.readline().replace("Nombre de vecteurs : ", ""))
+
+            # score of alignment
+            M = [[0 for j in range(m + 1)] for i in range(n + 1)]
+
+            # for each 'trame' of the audio file
+            #for i in range(1, n + 1):
+                # for each 'trame' of the oui file
+                #for j in range(1, m + 1):
+                    # M[i][j] = min(M[i - 1][j - 1], M[i][j - 1], M[i - 1][j]) + distance(mfcc_test_file[i - 1], mfcc_file_ref_oui[j - 1])
+
+            # score of the alignment mean of the matrix
+            #print(np.mean(M))
+
 
 # Call main function
 if __name__ == "__main__":
