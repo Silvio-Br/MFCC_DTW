@@ -208,9 +208,15 @@ def main():
 
         # Compare the mean of the distance between the test file and the ref files
         if (np.mean(M_oui_mean) < np.mean(M_non_mean)):
-            print("Le fichier " + array_tests[t] + " est un oui")
+            print("Le fichier " + array_tests[t] + " est un oui (comparaison des moyennes)")
         else:
-            print("Le fichier " + array_tests[t] + " est un non")
+            print("Le fichier " + array_tests[t] + " est un non (comparaison des moyennes)")
+
+        # Compare the min of the distance between the test file and the ref files
+        if (min(M_oui_mean) < min(M_non_mean)):
+            print("Le fichier " + array_tests[t] + " est un oui (comparaison des min)")
+        else:
+            print("Le fichier " + array_tests[t] + " est un non (comparaison des min)")
 
         # Print the distance
         print("Distance à OUI (moyenne) : " + str(np.mean(M_oui_mean)))
