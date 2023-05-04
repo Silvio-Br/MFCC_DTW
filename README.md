@@ -20,6 +20,9 @@ Pour lancer le programme, il faut se placer dans le dossier src et lancer le fic
 python main.py <path_to_ref_oui.txt> <path_to_ref_non.txt> <path_to_tests_txt>
 ```
 
+Les 3 fichiers passés en paramètres doivent être en format txt et doivent contenir les chemins vers les fichiers wav à utiliser. 
+Si les paramètres ne sont pas renseignés, le programme utilisera les fichiers par défauts présents dans le dossier source.
+
 ## Réponse aux questions
 
 ### Question 1
