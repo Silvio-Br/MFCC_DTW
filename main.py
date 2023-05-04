@@ -8,7 +8,7 @@ import librosa
 import numpy as np
 
 # Variables
-n_mfcc = 13 # Number of MFCC coeffs
+n_mfcc = 13  # Number of MFCC coeffs
 ref_oui_file = ""
 ref_non_file = ""
 tests_file = ""
@@ -27,7 +27,8 @@ def generate_mfcc(array_ref_oui, array_ref_non, array_tests):
         fen = np.hamming(win_length)
 
         # get MFCCs
-        mfccs = librosa.feature.mfcc(y=y, sr=sr, win_length=win_length, hop_length=hop_length, n_mfcc=n_mfcc, window=fen)
+        mfccs = librosa.feature.mfcc(y=y, sr=sr, win_length=win_length, hop_length=hop_length, n_mfcc=n_mfcc,
+                                     window=fen)
 
         # get delta
         delta = librosa.feature.delta(mfccs)
@@ -48,7 +49,7 @@ def generate_mfcc(array_ref_oui, array_ref_non, array_tests):
         delta_transpose = delta.T
         delta_delta_transpose = delta_delta.T
         for j in range(len(mfccs_transpose)):
-            mfcc_file.write("Vecteur " + str(j+1) + " : ")
+            mfcc_file.write("Vecteur " + str(j + 1) + " : ")
             for k in range(1, 13):
                 mfcc_file.write(str(mfccs_transpose[j][k]) + " ")
             for k in range(1, 13):
@@ -58,6 +59,8 @@ def generate_mfcc(array_ref_oui, array_ref_non, array_tests):
             mfcc_file.write("\n")
         mfcc_file.close()
 
+
+# Function to convert the mfcc file to a tab
 def mfccToTab(mfcc_file, n):
     NB = 36
 
@@ -73,7 +76,8 @@ def mfccToTab(mfcc_file, n):
     X.pop(0)
     return X
 
-#Fonction qui calcule la distance euclidienne entre deux vecteurs, formule : Σ(X[i][k] – Y[j][k])² / (ΣX[i][k]² . ΣY[i][k]²)
+
+# Calculate the distance betwee two vectors : Σ(X[i][k] – Y[j][k])² / (ΣX[i][k]² . ΣY[i][k]²)
 def distance(X, Y):
     somme = 0
     for k in range(36):
@@ -86,7 +90,6 @@ def distance(X, Y):
     if somme2 == 0:
         return 0
     return somme / somme2
-
 
 
 # main function
@@ -152,7 +155,7 @@ def main():
         # get number of vectors of the test
         n = int(mfcc_test_file.readline().replace("Nombre de vecteurs : ", ""))
 
-        #Generation du tableau X
+        # Generation du tableau X
         X = mfccToTab(mfcc_test_file, n)
 
         M_oui_mean = []
@@ -166,20 +169,21 @@ def main():
             # get number of vectors of the oui file
             m = int(mfcc_file_ref_oui.readline().replace("Nombre de vecteurs : ", ""))
 
-            #Generation du tableau Y
+            # Generation du tableau Y
             Y = mfccToTab(mfcc_file_ref_oui, m)
 
             # score of alignment
             M_oui = [[0 for v in range(m + 1)] for w in range(n + 1)]
 
             # for each 'trame' of the audio file
-            for i in range(1, n+1):
-                #for each 'trame' of the oui file
-                for j in range(1, m+1):
-                    M_oui[i][j] = min(M_oui[i - 1][j - 1], M_oui[i][j - 1], M_oui[i - 1][j]) + distance(X[i-1], Y[j-1])
+            for i in range(1, n + 1):
+                # for each 'trame' of the oui file
+                for j in range(1, m + 1):
+                    M_oui[i][j] = min(M_oui[i - 1][j - 1], M_oui[i][j - 1], M_oui[i - 1][j]) + distance(X[i - 1],
+                                                                                                        Y[j - 1])
 
             M_oui_mean.append(M_oui[n][m])
-        
+
         # for each non fiile
         for k in range(len(array_ref_non)):
             # get non file mfcc
@@ -188,26 +192,31 @@ def main():
             # get number of vectors of the non file
             m = int(mfcc_file_ref_non.readline().replace("Nombre de vecteurs : ", ""))
 
-            #Generation du tableau Y
+            # Generation du tableau Y
             Y = mfccToTab(mfcc_file_ref_non, m)
 
             # score of alignment
             M_non = [[0 for v in range(m + 1)] for w in range(n + 1)]
 
             # for each 'trame' of the audio file
-            for i in range(1, n+1):
-                #for each 'trame' of the non file
-                for j in range(1, m+1):
-                    M_non[i][j] = min(M_non[i - 1][j - 1], M_non[i][j - 1], M_non[i - 1][j]) + distance(X[i-1], Y[j-1])
+            for i in range(1, n + 1):
+                # for each 'trame' of the non file
+                for j in range(1, m + 1):
+                    M_non[i][j] = min(M_non[i - 1][j - 1], M_non[i][j - 1], M_non[i - 1][j]) + distance(X[i - 1],
+                                                                                                        Y[j - 1])
             M_non_mean.append(M_non[n][m])
 
-        print(M_oui_mean)
-        print(M_non_mean)
-        #Comparaison de la moyen des distances entre les deux fichiers
+        # Compare the mean of the distance between the test file and the ref files
         if (np.mean(M_oui_mean) < np.mean(M_non_mean)):
             print("Le fichier " + array_tests[t] + " est un oui")
         else:
             print("Le fichier " + array_tests[t] + " est un non")
+
+        # Print the distance
+        print("Distance à OUI (moyenne) : " + str(np.mean(M_oui_mean)))
+        print("Distance à NON (moyenne) : " + str(np.mean(M_non_mean)))
+        print("Distance à OUI (min) : " + str(min(M_oui_mean)))
+        print("Distance à NON (min) : " + str(min(M_non_mean)))
 
 
 # Call main function

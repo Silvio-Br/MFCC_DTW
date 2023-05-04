@@ -27,3 +27,20 @@ python main.py <path_to_ref_oui.txt> <path_to_ref_non.txt> <path_to_tests_txt>
 ### Question 2
 
 ### Question 3
+En testants les fichiers de références OUI et NON avec eux-mêmes, on obtient les résultats suivants :  
+
+**En utilisant la moyenne**
+- Bonnes réponses OUI : 6/8
+- Bonnes réponses NON : 7/8
+
+On obtient un taux de reconnaissance total de : 81.25%
+Taux de reconnaissance OUI : 75%
+Taux de reconnaissance NON : 87.5%  
+
+**En utilisant le minimum**
+- Bonnes réponses OUI : 8/8
+- Bonnes réponses NON : 8/8
+
+On obtient un taux de reconnaissance total de : 100%
+Taux de reconnaissance OUI : 100%
+Taux de reconnaissance NON : 100%
