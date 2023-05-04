@@ -95,8 +95,11 @@ def distance(X, Y):
 # main function
 def main():
     if (len(sys.argv) != 4):
-        print("Usage: python main.py <Ref_OUI.txt> <Ref_NON.txt> <Tests.txt>")
-        sys.exit(1)
+        print("Fichier par défaut : Ref_OUI.txt, Ref_NON.txt, Tests.txt")
+        print("Usage: python main.py <path_to_ref_oui.txt> <path_to_ref_non.txt> <path_to_tests_txt>")
+        ref_oui_file = "Ref_OUI.txt"
+        ref_non_file = "Ref_NON.txt"
+        tests_file = "Tests.txt"
 
     # take in arguments the 3 txt files
     if (len(sys.argv) == 4):
