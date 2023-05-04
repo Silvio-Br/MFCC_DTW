@@ -134,7 +134,7 @@ def main():
                 array_ref_non.append(line.replace("\n", ""))
 
     # create the MFCCs of the ref_oui_file and ref_non_file
-    #generate_mfcc(array_ref_oui, array_ref_non, array_tests)
+    generate_mfcc(array_ref_oui, array_ref_non, array_tests)
 
     # replace the .wav files by the .mfcc files
     for i in range(len(array_ref_oui)):
@@ -173,12 +173,12 @@ def main():
             M_oui = [[0 for v in range(m + 1)] for w in range(n + 1)]
 
             # for each 'trame' of the audio file
-            for i in range(1, n):
+            for i in range(1, n+1):
                 #for each 'trame' of the oui file
-                for j in range(1, m):
-                    M_oui[i][j] = min(M_oui[i - 1][j - 1], M_oui[i][j - 1], M_oui[i - 1][j]) + distance(X[i], Y[j])
+                for j in range(1, m+1):
+                    M_oui[i][j] = min(M_oui[i - 1][j - 1], M_oui[i][j - 1], M_oui[i - 1][j]) + distance(X[i-1], Y[j-1])
 
-            M_oui_mean.append(np.mean(M_oui))
+            M_oui_mean.append(M_oui[n][m])
         
         # for each non fiile
         for k in range(len(array_ref_non)):
@@ -195,27 +195,19 @@ def main():
             M_non = [[0 for v in range(m + 1)] for w in range(n + 1)]
 
             # for each 'trame' of the audio file
-            for i in range(1, n):
+            for i in range(1, n+1):
                 #for each 'trame' of the non file
-                for j in range(1, m):
-                    M_non[i][j] = min(M_non[i - 1][j - 1], M_non[i][j - 1], M_non[i - 1][j]) + distance(X[i], Y[j])
+                for j in range(1, m+1):
+                    M_non[i][j] = min(M_non[i - 1][j - 1], M_non[i][j - 1], M_non[i - 1][j]) + distance(X[i-1], Y[j-1])
+            M_non_mean.append(M_non[n][m])
 
-            M_non_mean.append(np.mean(M_non))
-
-
-        print(len(M_oui_mean))
         print(M_oui_mean)
-        print(len(M_non_mean))
         print(M_non_mean)
         #Comparaison de la moyen des distances entre les deux fichiers
         if (np.mean(M_oui_mean) < np.mean(M_non_mean)):
             print("Le fichier " + array_tests[t] + " est un oui")
         else:
             print("Le fichier " + array_tests[t] + " est un non")
-
-            
-
-
 
 
 # Call main function

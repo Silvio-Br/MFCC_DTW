@@ -1,1 +1,16 @@
+test_audio_files/test_non_1.wav
+test_audio_files/test_non_02.wav
+test_audio_files/test_non_03.wav
+test_audio_files/test_non_04.wav
+test_audio_files/test_non_05.wav
+test_audio_files/test_non_06.wav
+test_audio_files/test_non_07.wav
+test_audio_files/test_non_08.wav
 test_audio_files/test_oui_1.wav
+test_audio_files/test_oui_02.wav
+test_audio_files/test_oui_03.wav
+test_audio_files/test_oui_04.wav
+test_audio_files/test_oui_05.wav
+test_audio_files/test_oui_06.wav
+test_audio_files/test_oui_07.wav
+test_audio_files/test_oui_08.wav
