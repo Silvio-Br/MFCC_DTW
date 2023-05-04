@@ -134,7 +134,7 @@ def main():
                 array_ref_non.append(line.replace("\n", ""))
 
     # create the MFCCs of the ref_oui_file and ref_non_file
-    generate_mfcc(array_ref_oui, array_ref_non, array_tests)
+    #generate_mfcc(array_ref_oui, array_ref_non, array_tests)
 
     # replace the .wav files by the .mfcc files
     for i in range(len(array_ref_oui)):
@@ -144,12 +144,10 @@ def main():
     for i in range(len(array_tests)):
         array_tests[i] = array_tests[i].replace(".wav", ".mfcc").replace("audio", "mfcc")
 
-    NB = 36
-
     # for each test file
-    for l in range(len(array_tests)):
+    for t in range(len(array_tests)):
         # get the mfcc file
-        mfcc_test_file = open(array_tests[l], "r")
+        mfcc_test_file = open(array_tests[t], "r")
 
         # get number of vectors of the test
         n = int(mfcc_test_file.readline().replace("Nombre de vecteurs : ", ""))
@@ -161,9 +159,9 @@ def main():
         M_non_mean = []
 
         # for each oui file
-        for k in range(len(array_ref_non)):
+        for k in range(len(array_ref_oui)):
             # get oui file mfcc
-            mfcc_file_ref_oui = open(array_ref_non[k], "r")
+            mfcc_file_ref_oui = open(array_ref_oui[k], "r")
 
             # get number of vectors of the oui file
             m = int(mfcc_file_ref_oui.readline().replace("Nombre de vecteurs : ", ""))
@@ -172,7 +170,7 @@ def main():
             Y = mfccToTab(mfcc_file_ref_oui, m)
 
             # score of alignment
-            M_oui = [[0 for j in range(m + 1)] for i in range(n + 1)]
+            M_oui = [[0 for v in range(m + 1)] for w in range(n + 1)]
 
             # for each 'trame' of the audio file
             for i in range(1, n):
@@ -194,7 +192,7 @@ def main():
             Y = mfccToTab(mfcc_file_ref_non, m)
 
             # score of alignment
-            M_non = [[0 for j in range(m + 1)] for i in range(n + 1)]
+            M_non = [[0 for v in range(m + 1)] for w in range(n + 1)]
 
             # for each 'trame' of the audio file
             for i in range(1, n):
@@ -211,9 +209,9 @@ def main():
         print(M_non_mean)
         #Comparaison de la moyen des distances entre les deux fichiers
         if (np.mean(M_oui_mean) < np.mean(M_non_mean)):
-            print("Le fichier " + array_tests[l] + " est un oui")
+            print("Le fichier " + array_tests[t] + " est un oui")
         else:
-            print("Le fichier " + array_tests[l] + " est un non")
+            print("Le fichier " + array_tests[t] + " est un non")
 
             
 
