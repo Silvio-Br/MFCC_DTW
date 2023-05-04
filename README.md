@@ -74,7 +74,7 @@ Distance à NON (min) : 0.014207853743115745
 
 ### Question 2
 
-Pour rejeter un fichier qui n'est ni OUI ni NON, 
+Pour rejeter un fichier qui n'est ni OUI ni NON, nous pouvons mettre en place une valeur seuil à ne pas dépasser. Si la valeur de la distance dépasse ce seuil, le fichier est rejeté. Cette valeur seuil pourrait être calculé pour chaque exécution du programme en fonction des distances calculées. Par exemple, on pourrait prendre la moyenne des distances calculées et ajouter un écart type. Si la distance calculée est supérieure à cette valeur, le fichier est rejeté.
 
 ### Question 3
 En testants les fichiers de références OUI et NON avec eux-mêmes, on obtient les résultats suivants :  
