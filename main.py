@@ -58,6 +58,36 @@ def generate_mfcc(array_ref_oui, array_ref_non, array_tests):
             mfcc_file.write("\n")
         mfcc_file.close()
 
+def mfccToTab(mfcc_file, n):
+    NB = 36
+
+    X = [[0 for j in range(NB + 1)] for i in range(n + 1)]
+    # for each vector of the mfcc file (except the first line) put the vector in X
+    for i in range(1, n + 1):
+        line = mfcc_file.readline().replace("Vecteur " + str(i) + " : ", "").split(" ")
+        # remove last element of the list (empty string)
+        line.pop()
+
+        for j in range(0, NB):
+            X[i][j] = float(line[j])
+    X.pop(0)
+    return X
+
+#Fonction qui calcule la distance euclidienne entre deux vecteurs, formule : Σ(X[i][k] – Y[j][k])² / (ΣX[i][k]² . ΣY[i][k]²)
+def distance(X, Y):
+    somme = 0
+    for k in range(36):
+        somme += (X[k] - Y[k]) ** 2
+
+    somme2 = 0
+    for k in range(36):
+        somme2 += (X[k] ** 2) * (Y[k] ** 2)
+
+    if somme2 == 0:
+        return 0
+    return somme / somme2
+
+
 
 # main function
 def main():
@@ -117,43 +147,77 @@ def main():
     NB = 36
 
     # for each test file
-    for j in range(len(array_tests)):
+    for l in range(len(array_tests)):
         # get the mfcc file
-        mfcc_test_file = open(array_tests[j], "r")
+        mfcc_test_file = open(array_tests[l], "r")
 
-        # get number of vectors of the mfcc file
+        # get number of vectors of the test
         n = int(mfcc_test_file.readline().replace("Nombre de vecteurs : ", ""))
 
-        X = [[0 for j in range(NB + 1)] for i in range(n + 1)]
-        # for each vector of the mfcc file (except the first line) put the vector in X
-        for i in range(1, n + 1):
-            line = mfcc_test_file.readline().replace("Vecteur " + str(i) + " : ", "").split(" ")
-            # remove last element of the list (empty string)
-            line.pop()
+        #Generation du tableau X
+        X = mfccToTab(mfcc_test_file, n)
 
-            for j in range(0, NB):
-                X[i][j] = line[j]
-        X.pop(0)
+        M_oui_mean = []
+        M_non_mean = []
 
         # for each oui file
-        for k in range(len(array_ref_oui)):
+        for k in range(len(array_ref_non)):
             # get oui file mfcc
-            mfcc_file_ref_oui = open(array_ref_oui[k], "r")
+            mfcc_file_ref_oui = open(array_ref_non[k], "r")
 
-            # get number of vectors of the oui
+            # get number of vectors of the oui file
             m = int(mfcc_file_ref_oui.readline().replace("Nombre de vecteurs : ", ""))
 
+            #Generation du tableau Y
+            Y = mfccToTab(mfcc_file_ref_oui, m)
+
             # score of alignment
-            M = [[0 for j in range(m + 1)] for i in range(n + 1)]
+            M_oui = [[0 for j in range(m + 1)] for i in range(n + 1)]
 
             # for each 'trame' of the audio file
-            #for i in range(1, n + 1):
-                # for each 'trame' of the oui file
-                #for j in range(1, m + 1):
-                    # M[i][j] = min(M[i - 1][j - 1], M[i][j - 1], M[i - 1][j]) + distance(mfcc_test_file[i - 1], mfcc_file_ref_oui[j - 1])
+            for i in range(1, n):
+                #for each 'trame' of the oui file
+                for j in range(1, m):
+                    M_oui[i][j] = min(M_oui[i - 1][j - 1], M_oui[i][j - 1], M_oui[i - 1][j]) + distance(X[i], Y[j])
 
-            # score of the alignment mean of the matrix
-            #print(np.mean(M))
+            M_oui_mean.append(np.mean(M_oui))
+        
+        # for each non fiile
+        for k in range(len(array_ref_non)):
+            # get non file mfcc
+            mfcc_file_ref_non = open(array_ref_non[k], "r")
+
+            # get number of vectors of the non file
+            m = int(mfcc_file_ref_non.readline().replace("Nombre de vecteurs : ", ""))
+
+            #Generation du tableau Y
+            Y = mfccToTab(mfcc_file_ref_non, m)
+
+            # score of alignment
+            M_non = [[0 for j in range(m + 1)] for i in range(n + 1)]
+
+            # for each 'trame' of the audio file
+            for i in range(1, n):
+                #for each 'trame' of the non file
+                for j in range(1, m):
+                    M_non[i][j] = min(M_non[i - 1][j - 1], M_non[i][j - 1], M_non[i - 1][j]) + distance(X[i], Y[j])
+
+            M_non_mean.append(np.mean(M_non))
+
+
+        print(len(M_oui_mean))
+        print(M_oui_mean)
+        print(len(M_non_mean))
+        print(M_non_mean)
+        #Comparaison de la moyen des distances entre les deux fichiers
+        if (np.mean(M_oui_mean) < np.mean(M_non_mean)):
+            print("Le fichier " + array_tests[l] + " est un oui")
+        else:
+            print("Le fichier " + array_tests[l] + " est un non")
+
+            
+
+
 
 
 # Call main function
