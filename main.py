@@ -37,7 +37,7 @@ def generate_mfcc(array_ref_oui, array_ref_non, array_tests):
         delta_delta = librosa.feature.delta(mfccs, order=2)
 
         # generate the .mfcc file
-        # Vecteur i : [12 coeffs MFCCs] [12 coeffs delta] [12 coeffs delta-delta]
+        # Vector i : [12 coeffs MFCCs] [12 coeffs delta] [12 coeffs delta-delta]
         # create folder mfcc_files if it doesn't exist
         if not os.path.exists("mfcc_files"):
             os.makedirs("mfcc_files")
@@ -158,7 +158,7 @@ def main():
         # get number of vectors of the test
         n = int(mfcc_test_file.readline().replace("Nombre de vecteurs : ", ""))
 
-        # Generation du tableau X
+        # generation of the tab X
         X = mfccToTab(mfcc_test_file, n)
 
         M_oui_mean = []
@@ -172,7 +172,7 @@ def main():
             # get number of vectors of the oui file
             m = int(mfcc_file_ref_oui.readline().replace("Nombre de vecteurs : ", ""))
 
-            # Generation du tableau Y
+            # generation of the tab Y
             Y = mfccToTab(mfcc_file_ref_oui, m)
 
             # score of alignment
@@ -195,7 +195,7 @@ def main():
             # get number of vectors of the non file
             m = int(mfcc_file_ref_non.readline().replace("Nombre de vecteurs : ", ""))
 
-            # Generation du tableau Y
+            # generation of the tab Y
             Y = mfccToTab(mfcc_file_ref_non, m)
 
             # score of alignment
